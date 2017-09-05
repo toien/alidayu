@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
 '''
 SDK for alidayu
-
 requires: python3.x, requests
-
 @author: raptor.zh@gmail.com
 '''
 
@@ -24,16 +21,25 @@ class RestApi(object):
         self.partner_id = partner_id
 
     def sign(self, params):
-        #===========================================================================
+        # ===========================================================================
         # '''签名方法
         # @param parameters: 支持字典和string两种
         # '''
-        #===========================================================================
+        # ===========================================================================
         if isinstance(params, dict):
-            params = "".join(["".join([k, v]) for k,v in sorted(params.items())])
+            params = "".join(["".join([k, v]) for k, v in sorted(params.items())])
             params = "".join([self.secret, params, self.secret])
         sign = hashlib.md5(params.encode("utf-8")).hexdigest().upper()
         return sign
+
+    def get_api_name(self):
+        pass
+
+    def get_param_names(self):
+        pass
+
+    def get_option_names(self):
+        pass
 
     def get_api_params(self):
         params = {}
@@ -44,16 +50,16 @@ class RestApi(object):
         [params.__setitem__(k, getattr(self, k)) for k in self.get_option_names() if hasattr(self, k)]
         return params
 
-    def getResponse(self, authorize=None):
+    def get_response(self, authorize=None):
         sys_params = {
-                "method": self.get_api_name(),
-                "app_key": self.key,
-                "timestamp": str(int(time() * 1000)),
-                "format": "json",
-                "v": "2.0",
-                "partner_id": self.partner_id,
-                "sign_method": "md5",
-                }
+            "method": self.get_api_name(),
+            "app_key": self.key,
+            "timestamp": str(int(time() * 1000)),
+            "format": "json",
+            "v": "2.0",
+            "partner_id": self.partner_id,
+            "sign_method": "md5",
+        }
         if authorize is not None:
             sys_params['session'] = authorize
         params = self.get_api_params()
@@ -61,15 +67,14 @@ class RestApi(object):
         sign_params.update(params)
         sys_params['sign'] = self.sign(sign_params)
         headers = {
-                 'Content-type': 'application/x-www-form-urlencoded;charset=UTF-8',
-                 "Cache-Control": "no-cache",
-                 "Connection": "Keep-Alive",
+            'Content-type': 'application/x-www-form-urlencoded;charset=UTF-8',
+            "Cache-Control": "no-cache",
+            "Connection": "Keep-Alive",
         }
-        #headers = {"Content-Type":"application/x-www-form-urlencoded;charset=utf-8"}
 
         sys_params.update(params)
         logger.debug(json.dumps(sys_params))
-        r = requests.post(self.url, params=sys_params, headers=headers)
+        r = requests.post(self.url, params=sys_params, headers=headers, timeout=(3, 5))
         r.raise_for_status()
         return r.json()
 
