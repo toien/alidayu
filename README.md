@@ -9,7 +9,7 @@
 
     # 其中 appkey 和 secret 是必须的参数
     # url 可选，默认为沙箱的URL，正式应用请传入 http://gw.api.taobao.com/router/rest
-    # partner_id 为可选，其值为下载的 TOP SDK 中的top/api/base.py 里的SYSTEM_GENERATE_VERSION
+    # partner_id 为可选，其值为下载的 TOP SDK 中的top/api/base.py 里的 SYSTEM_GENERATE_VERSION
     req = AlibabaAliqinFcSmsNumSendRequest(appkey, secret, url, partner_id)
      
     req.extend = "123456"                  # 默认扩展参数，回调时透传给我们
